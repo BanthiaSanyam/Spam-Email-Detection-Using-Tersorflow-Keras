@@ -95,6 +95,7 @@ history = model.fit(
 
 # Save the trained model
 model.save('spam_detection_model.h5')
+
 print("Model saved successfully.")
 
 # Save the tokenizer
