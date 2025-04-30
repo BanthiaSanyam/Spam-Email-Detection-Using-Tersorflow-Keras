@@ -145,7 +145,7 @@ def calculate_class_weights(dataset):
     return sample_weights
 
 def train_model(model, train_loader, val_loader, criterion, optimizer, scheduler, 
-                num_epochs=30, device='cuda', early_stopping_patience=5):
+                num_epochs=15, device='cuda', early_stopping_patience=5):
     best_val_acc = 0.0
     best_model_state = None
     patience_counter = 0

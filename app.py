@@ -8,14 +8,13 @@ import gc  # Added missing import
 import numpy as np
 from datetime import datetime
 import pandas as pd
-import torchvision.transforms as transforms
+import torchvision.transforms as transforms # type: ignore
 from PIL import Image
-import io
+import io 
 import base64
 
 UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
@@ -34,7 +33,8 @@ label_encoder = None
 metadata = None
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# Improved tokenizer class with handling for unknown words
+# Improved the tokenizer class in tensorflow
+ 
 class TextTokenizer:
     def __init__(self, num_words=None, oov_token='<UNK>'):
         self.num_words = num_words
@@ -59,10 +59,10 @@ class TextTokenizer:
         # Sort words by frequency
         sorted_words = sorted(self.word_counts.items(), key=lambda x: (-x[1], x[0]))
         
-        # Create word_index mapping, reserving index 0 for padding
+       
         self.word_index = {self.oov_token: self.oov_index}
         
-        # Limit vocabulary size if specified
+        # Limit vocabulary size
         word_list = sorted_words
         if self.num_words:
             word_list = sorted_words[:self.num_words-1]  # -1 for OOV token
@@ -70,8 +70,7 @@ class TextTokenizer:
         # Start from index 2 (0=padding, 1=OOV)
         for idx, (word, _) in enumerate(word_list, start=2):
             self.word_index[word] = idx
-            
-        # Create reverse mapping
+         
         self.index_word = {v: k for k, v in self.word_index.items()}
         self.index_word[0] = '<PAD>'
             
@@ -140,13 +139,11 @@ class SpamDetectorLSTM(torch.nn.Module):
         self.fc = torch.nn.Linear(hidden_dim * 2, num_classes)
     
     def forward(self, x):
-        # Ensure all indices are within bounds
-        x = torch.clamp(x, 0, self.embedding.num_embeddings - 1)
         
-        # Get embeddings
+        x = torch.clamp(x, 0, self.embedding.num_embeddings - 1)# Ensure all indices are within bounds
+      
         embedded = self.embedding(x)
-        
-        # Apply LSTM
+     
         lstm_out, _ = self.lstm(embedded)
         
         # Apply attention

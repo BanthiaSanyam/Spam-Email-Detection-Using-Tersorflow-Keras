@@ -16,13 +16,15 @@ from tqdm import tqdm
 import gc
 from multiprocessing import freeze_support
 
+
+
 # Enhanced text cleaning function
 def clean_text(text):
     """Advanced text cleaning for spam detection."""
     if text is None or pd.isna(text) or not isinstance(text, str):
         return ""
     
-    # Convert to lowercase
+    # Convert to lowercased
     text = text.lower()
     
     # Remove URLs
@@ -63,7 +65,7 @@ def visualize_data_distribution(df, label_column, save_path=None):
 # Text length analysis
 def visualize_text_length(df, text_column, label_column, save_path=None):
     """Visualize the distribution of text lengths by label."""
-    df['text_length'] = df[text_column].apply(lambda x: len(str(x).split()))
+    df['text_length'] = df[text_column].apply(lambda x: len(str(x).split()))  # Adds a new column `text_length` to df.
     
     plt.figure(figsize=(12, 6))
     sns.histplot(data=df, x='text_length', hue=label_column, kde=True, bins=50)
@@ -84,8 +86,8 @@ def visualize_text_length(df, text_column, label_column, save_path=None):
 class TextTokenizer:
     def __init__(self, num_words=None, oov_token='<UNK>'):
         self.num_words = num_words
-        self.word_index = {}
-        self.index_word = {}
+        self.word_index = {}             # Dictionary to store word frequencies.
+        self.index_word = {}              # Vocabulary that maps words to indices.
         self.word_counts = Counter()
         self.document_count = 0
         self.oov_token = oov_token
@@ -103,7 +105,7 @@ class TextTokenizer:
                     self.word_counts[word] += 1
         
         # Sort words by frequency
-        sorted_words = sorted(self.word_counts.items(), key=lambda x: (-x[1], x[0]))
+        sorted_words = sorted(self.word_counts.items(), key=lambda x: (-x[1], x[0]))    # Sorts words by frequency.
         
         # Create word_index mapping, reserving index 0 for padding
         self.word_index = {self.oov_token: self.oov_index}
@@ -224,6 +226,8 @@ if __name__ == '__main__':
     # Check CUDA availability and set device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Using device: {device}')
+   # model = model.to(device)
+    
     if torch.cuda.is_available():
         print(f'GPU: {torch.cuda.get_device_name(0)}')
         print(f'Memory Allocated: {torch.cuda.memory_allocated(0)//1024//1024}MB')
